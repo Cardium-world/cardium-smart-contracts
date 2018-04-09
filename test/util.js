@@ -2,6 +2,14 @@ function toEther(n) {
     return web3.toWei(n, "ether");
 }
 
+const promisify = (inner) =>
+    new Promise((resolve, reject) =>
+        inner((err, res) => {
+            if (err) { reject(err) }
+            resolve(res);
+        })
+    );
+
 module.exports = {
     assertRevert: async promise => {
         try {
@@ -39,7 +47,7 @@ module.exports = {
 
     getBalance: async contract => {
         if (typeof contract === 'string') {
-            const balance = await getAddressBalance(contract)
+            const balance = await module.exports.getAddressBalance(contract)
             return balance.toString()
         } else {
             return contract.contract._eth.getBalance(contract.address).toNumber()
